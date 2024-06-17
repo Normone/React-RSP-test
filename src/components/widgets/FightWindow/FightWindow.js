@@ -1,61 +1,89 @@
 import { Card, ProgressBar, Text, Button } from "../../";
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import './FightWindow.css'
 
 
-export const FightWindow = ({ onClick = null, className = '', enemy, ...props }) => {
+export const FightWindow = ({ onClick = null, className = '', enemy, player, setPlayer, ...props }) => {
 
     const [results, setResults] = useState({w:0, d:0, s:0});
     const [isFight, setIsFight] = useState(false);
+    const [isEndRound, setIsEndRound] = useState(false);
     const [enemyHP, setEnemyHP] = useState(enemy.hp);
-    const [playerHP, setPlayerHP] = useState(100);
+    const [playerHP, setPlayerHP] = useState(player.hp);
     const [enemyChoise, setEnemyChoise] = useState('default');
     const [playerChoise, setPlayerChoise] = useState('default');
 
     const options = ['r', 's', 'p'];
 
+    useEffect(() => {
+        checkEnd();
+    }, [enemyHP, playerHP]);
+
     function startFight() {
-        setIsFight(true)
-        setEnemyChoise(options[Math.floor(Math.random() * options.length)])
+        setEnemyHP(enemy.hp);
+        setPlayerHP(player.hp);
+        setIsFight(true);
+        doEnemyChoise();
         
     }
-    function doChoise(c) {
-        
+    function showRoundResult(pc) {
+        setPlayerChoise(pc)
+        setIsEndRound(true)
+        setTimeout(()=>{setIsEndRound(false)}, 1000)
+    }
+    function checkEnd() {
+        if (enemyHP <= 0 && playerHP <= 0) {
+            setResults({...results, s: results.s + 1});
+            setIsFight(false);
+        } else if (enemyHP <= 0) {
+            setResults({...results, w: results.w + 1});
+            setIsFight(false);
+        } else if (playerHP <= 0) {
+            setResults({...results, d: results.d + 1});
+            setIsFight(false);
+        }
+        doEnemyChoise()
+    }
+    function doEnemyChoise() {
+        setEnemyChoise(options[Math.floor(Math.random() * options.length)]);
+    }
+    function doPlayerChoise(c) {
+
         switch (c) {
             case 'r':
                 if (enemyChoise == 's') {
-                    setResults({...results, w: results.w + 1})
+                    setEnemyHP(enemyHP-10)
                 } else if (enemyChoise == 'r') {
-                    setResults({...results, s: results.s + 1})
+                    setEnemyHP(enemyHP-10)
+                    setPlayerHP(playerHP-10)
                 } else {
-                    setResults({...results, d: results.d + 1})
+                    setPlayerHP(playerHP-10)
                 }
-                setIsFight(false)
                 break;
             case 's':
                 if (enemyChoise == 'p') {
-                    setResults({...results, w: results.w + 1})
+                    setEnemyHP(enemyHP-10)
                 } else if (enemyChoise == 's') {
-                    setResults({...results, s: results.s + 1})
+                    setEnemyHP(enemyHP-10)
+                    setPlayerHP(playerHP-10)
                 } else {
-                    setResults({...results, d: results.d + 1})
+                    setPlayerHP(playerHP-10)
                 }
-                setIsFight(false)
                 break;
             case 'p':
                 if (enemyChoise == 'r') {
-                    setResults({...results, w: results.w + 1})
+                    setEnemyHP(enemyHP-10)
                 } else if (enemyChoise == 'p') {
-                    setResults({...results, s: results.s + 1})
+                    setEnemyHP(enemyHP-10)
+                    setPlayerHP(playerHP-10)
                 } else {
-                    setResults({...results, d: results.d + 1})
+                    setPlayerHP(playerHP-10)
                 }
-                setIsFight(false)
                 break;
             default:
                 break;
         }
-        setPlayerChoise(c)
+        showRoundResult(c)
     }
 
     return (
@@ -63,17 +91,21 @@ export const FightWindow = ({ onClick = null, className = '', enemy, ...props })
             <Text className="FWStatus">{isFight ? 'Битва!' : ''}</Text>
             <div className='enemy'>
                 <ProgressBar color="red" maxVal={enemy.hp} curVal={enemyHP}>hp</ProgressBar>
-                {isFight ? <Card /> : <Card type={enemyChoise}/>}
+                <div className="enemyCards">
+                    {isFight && !isEndRound ? <Card /> : <Card type={enemyChoise}/>}
+                </div>
             </div>
             <div className='player'>
-                {isFight ? 
-                <>
-                <Card type="r" playable={doChoise} />
-                <Card type="s" playable={doChoise} />
-                <Card type="p" playable={doChoise} />
-                </>
-                : <Card type={playerChoise}/>}
-                
+                <div className="playerCards">
+                    {isFight && !isEndRound ? 
+                    <>
+                    <Card type="r" playable={doPlayerChoise} />
+                    <Card type="s" playable={doPlayerChoise} />
+                    <Card type="p" playable={doPlayerChoise} />
+                    </>
+                    : <Card type={playerChoise}/>}
+                </div>
+                <ProgressBar color="green" maxVal={player.hp} curVal={playerHP}>hp</ProgressBar>
             </div>
             <div className="result">
                 <Text>Побед: {results.w}</Text>

@@ -14,9 +14,11 @@
     grid-row: 2 / 3;
 }
 .player {
-    display: flex;
     grid-column: 2 / 3;
     grid-row: 3 / 4;
+}
+.playerCards {
+    display: flex;
 }
 .result {
     grid-column: 1 / 2;
