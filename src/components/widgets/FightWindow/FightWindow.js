@@ -1,11 +1,14 @@
-import { Card, Text, Button } from "../../";
+import { Card, ProgressBar, Text, Button } from "../../";
 import {useState} from 'react'
 import './FightWindow.css'
 
-export const FightWindow = ({ onClick = null, className = '', ...props }) => {
+
+export const FightWindow = ({ onClick = null, className = '', enemy, ...props }) => {
 
     const [results, setResults] = useState({w:0, d:0, s:0});
     const [isFight, setIsFight] = useState(false);
+    const [enemyHP, setEnemyHP] = useState(enemy.hp);
+    const [playerHP, setPlayerHP] = useState(100);
     const [enemyChoise, setEnemyChoise] = useState('default');
     const [playerChoise, setPlayerChoise] = useState('default');
 
@@ -59,6 +62,7 @@ export const FightWindow = ({ onClick = null, className = '', ...props }) => {
         <div className={`fightWindow ${className}`} onClick={onClick} {...props}>
             <Text className="FWStatus">{isFight ? 'Битва!' : ''}</Text>
             <div className='enemy'>
+                <ProgressBar color="red" maxVal={enemy.hp} curVal={enemyHP}>hp</ProgressBar>
                 {isFight ? <Card /> : <Card type={enemyChoise}/>}
             </div>
             <div className='player'>
