@@ -32,7 +32,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         setTimeout(()=>{
             setIsEndRound(false);
             doEnemyChoise();
-        }, 1000)
+        }, 1500)
         
     }
     function checkEnd() {
