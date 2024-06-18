@@ -1,4 +1,4 @@
-import { Card, ProgressBar, Text, Button } from "../../";
+import { Card, ProgressBar, TextBubble, Text, Button } from "../../";
 import {useState, useEffect} from 'react'
 import './FightWindow.css'
 
@@ -12,6 +12,8 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
     const [playerHP, setPlayerHP] = useState(player.hp);
     const [enemyChoise, setEnemyChoise] = useState('default');
     const [playerChoise, setPlayerChoise] = useState('default');
+    const [showBubble, setShowBubble] = useState(false);
+    const [resultLine, setResultLine] = useState('');
 
     const options = ['r', 's', 'p'];
 
@@ -22,6 +24,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
     function startFight() {
         setEnemyHP(enemy.hp);
         setPlayerHP(player.hp);
+        setShowBubble(false);
         setIsFight(true);
         doEnemyChoise();
         
@@ -32,19 +35,41 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         setTimeout(()=>{
             setIsEndRound(false);
             doEnemyChoise();
-        }, 1500)
+        }, 500)
         
+    }
+    function choosingBubbleLine(c) {
+        let lines = enemy.lines;
+        switch (c) {
+            case 'win':
+                setResultLine(lines.win[Math.floor(Math.random() * lines.win.length)]);
+                break;
+            case 'defeat':
+                setResultLine(lines.defeat[Math.floor(Math.random() * lines.defeat.length)]);
+                break;
+            case 'standoff':
+                setResultLine(lines.standoff[Math.floor(Math.random() * lines.standoff.length)]);
+                break;
+            default:
+                break;
+        }
     }
     function checkEnd() {
         if (enemyHP <= 0 && playerHP <= 0) {
             setResults({...results, s: results.s + 1});
             setIsFight(false);
+            setShowBubble(true);
+            choosingBubbleLine('standoff');
         } else if (enemyHP <= 0) {
             setResults({...results, w: results.w + 1});
             setIsFight(false);
+            setShowBubble(true);
+            choosingBubbleLine('win');
         } else if (playerHP <= 0) {
             setResults({...results, d: results.d + 1});
             setIsFight(false);
+            setShowBubble(true);
+            choosingBubbleLine('defeat');
         }
     }
     function doEnemyChoise() {
@@ -89,11 +114,17 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         showRoundResult(c);
     }
 
+
+
     return (
         <div className={`fightWindow ${className}`} onClick={onClick} {...props}>
             <Text className="FWStatus">{isFight ? 'Битва!' : ''}</Text>
             <div className='enemy'>
-                <ProgressBar color="red" maxVal={enemy.hp} curVal={enemyHP}>hp</ProgressBar>
+                <div>
+                    <ProgressBar color="red" maxVal={enemy.hp} curVal={enemyHP}>hp</ProgressBar>
+                    {showBubble && <TextBubble>{resultLine}</TextBubble> }
+                </div>
+                
                 <div className="enemyCards">
                     {isFight && !isEndRound ? <Card /> : <Card type={enemyChoise}/>}
                 </div>

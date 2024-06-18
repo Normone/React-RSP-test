@@ -1,0 +1,11 @@
+.textBubble {
+    width: auto;
+    height: 30px;
+    float: right;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+.textBubble p {
+    padding: 2px 6px;
+    margin: 0;
+}
