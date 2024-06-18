@@ -27,9 +27,13 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         
     }
     function showRoundResult(pc) {
-        setPlayerChoise(pc)
-        setIsEndRound(true)
-        setTimeout(()=>{setIsEndRound(false)}, 1000)
+        setPlayerChoise(pc);
+        setIsEndRound(true);
+        setTimeout(()=>{
+            setIsEndRound(false);
+            doEnemyChoise();
+        }, 1000)
+        
     }
     function checkEnd() {
         if (enemyHP <= 0 && playerHP <= 0) {
@@ -42,7 +46,6 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
             setResults({...results, d: results.d + 1});
             setIsFight(false);
         }
-        doEnemyChoise()
     }
     function doEnemyChoise() {
         setEnemyChoise(options[Math.floor(Math.random() * options.length)]);
@@ -52,38 +55,38 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         switch (c) {
             case 'r':
                 if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP-10)
+                    setEnemyHP(enemyHP-10);
                 } else if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP-10)
-                    setPlayerHP(playerHP-10)
+                    setEnemyHP(enemyHP-10);
+                    setPlayerHP(playerHP-10);
                 } else {
-                    setPlayerHP(playerHP-10)
+                    setPlayerHP(playerHP-10);
                 }
                 break;
             case 's':
                 if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP-10)
+                    setEnemyHP(enemyHP-10);
                 } else if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP-10)
-                    setPlayerHP(playerHP-10)
+                    setEnemyHP(enemyHP-10);
+                    setPlayerHP(playerHP-10);
                 } else {
-                    setPlayerHP(playerHP-10)
+                    setPlayerHP(playerHP-10);
                 }
                 break;
             case 'p':
                 if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP-10)
+                    setEnemyHP(enemyHP-10);
                 } else if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP-10)
-                    setPlayerHP(playerHP-10)
+                    setEnemyHP(enemyHP-10);
+                    setPlayerHP(playerHP-10);
                 } else {
-                    setPlayerHP(playerHP-10)
+                    setPlayerHP(playerHP-10);
                 }
                 break;
             default:
                 break;
         }
-        showRoundResult(c)
+        showRoundResult(c);
     }
 
     return (
