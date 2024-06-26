@@ -1,8 +1,11 @@
+import React, { useContext } from 'react';
 import { CardIcon, Text, Button } from "../..";
+import {ThemeContext} from './../../entities';
 import './Card.css'
 
 
 export const Card = ({ onClick = null, playable = false, className = '', type = 'default', ...props }) => {
+    const { theme, dispatch } = useContext(ThemeContext);
 
     let text;
     switch (type) {
@@ -22,7 +25,7 @@ export const Card = ({ onClick = null, playable = false, className = '', type = 
     }    
 
     return (
-        <div className={`card ${className}`} onClick={onClick} {...props}>
+        <div className={`card ${theme} ${className}`} onClick={onClick} {...props}>
             <CardIcon type={type}></CardIcon>
             <Text>{text}</Text>
             {playable !== false &&
