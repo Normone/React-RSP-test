@@ -59,7 +59,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
             setResults({ ...results, w: results.w + 1 });
             chooseBubbleLine('win');
             console.log('setPlayer called');
-            setPlayer({...player, money: player.money + ((Math.floor(Math.random() * (100 - 50 + 1)) + 50) * player.upgrades.lvlGoldGain)})
+            setPlayer({...player, money: player.money + ((Math.floor(Math.random() * (100 - 50 + 1)) + 50) * (1 + player.upgrades.lvlGoldGain))})
         } else if (playerHP <= 0) {
             setResults({ ...results, d: results.d + 1 });
             chooseBubbleLine('defeat');
