@@ -20,13 +20,13 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
     useEffect(() => {
         checkEnd();
     }, [enemyHP, playerHP]);
-    useEffect(()=> {
+    useEffect(() => {
         if (isFight === true) {
             setShowNavBar(false)
         } else {
             setShowNavBar(true)
         }
-    }, [isFight])
+    }, [isFight]);
 
     function startFight() {
         setEnemyHP(enemy.hp);
@@ -45,79 +45,55 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         }, 1500)
         
     }
-    function choosingBubbleLine(c) {
-        let lines = enemy.lines;
-        switch (c) {
-            case 'win':
-                setResultLine(lines.win[Math.floor(Math.random() * lines.win.length)]);
-                break;
-            case 'defeat':
-                setResultLine(lines.defeat[Math.floor(Math.random() * lines.defeat.length)]);
-                break;
-            case 'standoff':
-                setResultLine(lines.standoff[Math.floor(Math.random() * lines.standoff.length)]);
-                break;
-            default:
-                break;
-        }
+    function chooseBubbleLine(c) {
+        const lines = enemy.lines[c];
+        setResultLine(lines[Math.floor(Math.random() * lines.length)]);
+        
     }
     function checkEnd() {
+
         if (enemyHP <= 0 && playerHP <= 0) {
-            setResults({...results, s: results.s + 1});
-            setIsFight(false);
-            setShowBubble(true);
-            choosingBubbleLine('standoff');
+            setResults({ ...results, s: results.s + 1 });
+            chooseBubbleLine('standoff');
         } else if (enemyHP <= 0) {
-            setResults({...results, w: results.w + 1});
-            setIsFight(false);
-            setShowBubble(true);
-            choosingBubbleLine('win');
+            setResults({ ...results, w: results.w + 1 });
+            chooseBubbleLine('win');
+            console.log('setPlayer called');
+            setPlayer({...player, money: player.money + ((Math.floor(Math.random() * (100 - 50 + 1)) + 50) * player.upgrades.lvlGoldGain)})
         } else if (playerHP <= 0) {
-            setResults({...results, d: results.d + 1});
+            setResults({ ...results, d: results.d + 1 });
+            chooseBubbleLine('defeat');
+        }
+        if (enemyHP <= 0 || playerHP <= 0) {
             setIsFight(false);
             setShowBubble(true);
-            choosingBubbleLine('defeat');
         }
     }
+
+
+    function calculateDamage(playerChoise, enemyChoise) {
+        if (playerChoise === 'r' && enemyChoise === 's') {
+            return { playerDamage: 0, enemyDamage: 10 * (1 + (player.upgrades.lvlDMG / 10)) };
+        } else if (playerChoise === 's' && enemyChoise === 'p') {
+            return { playerDamage: 0, enemyDamage: 10 * (1 + (player.upgrades.lvlDMG / 10)) };
+        } else if (playerChoise === 'p' && enemyChoise === 'r') {
+            return { playerDamage: 0, enemyDamage: 10 * (1 + (player.upgrades.lvlDMG / 10)) };
+        } else if (playerChoise === enemyChoise) {
+            return { playerDamage: 10, enemyDamage: 10 * (1 + (player.upgrades.lvlDMG / 10)) };
+        } else {
+            return { playerDamage: 10, enemyDamage: 0 };
+        }
+        }
+
+
     function doEnemyChoise() {
         setEnemyChoise(options[Math.floor(Math.random() * options.length)]);
     }
     function doPlayerChoise(c) {
 
-        switch (c) {
-            case 'r':
-                if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                } else if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                    setPlayerHP(playerHP - 10);
-                } else {
-                    setPlayerHP(playerHP - 10);
-                }
-                break;
-            case 's':
-                if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                } else if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                    setPlayerHP(playerHP - 10);
-                } else {
-                    setPlayerHP(playerHP - 10);
-                }
-                break;
-            case 'p':
-                if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                } else if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
-                    setPlayerHP(playerHP - 10);
-                } else {
-                    setPlayerHP(playerHP - 10);
-                }
-                break;
-            default:
-                break;
-        }
+        const { playerDamage, enemyDamage } = calculateDamage(c, enemyChoise);
+        setPlayerHP(playerHP - playerDamage);
+        setEnemyHP(enemyHP - enemyDamage);
         showRoundResult(c);
     }
 
@@ -159,7 +135,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
                 setResults({...results, d: results.d + 1});
                 setIsFight(false);
                 setShowBubble(true);
-                choosingBubbleLine('defeat');
+                chooseBubbleLine('defeat');
             }}>Сдаться.</Button>}
         </div>
     );
