@@ -3,13 +3,13 @@ import {useState, useEffect} from 'react'
 import './FightWindow.css'
 
 
-export const FightWindow = ({ onClick = null, className = '', enemy, player, setPlayer, ...props }) => {
+export const FightWindow = ({ onClick = null, className = '', enemy, player, setPlayer, setShowNavBar, ...props }) => {
 
     const [results, setResults] = useState({w:0, d:0, s:0});
     const [isFight, setIsFight] = useState(false);
     const [isEndRound, setIsEndRound] = useState(false);
     const [enemyHP, setEnemyHP] = useState(enemy.hp);
-    const [playerHP, setPlayerHP] = useState(player.hp);
+    const [playerHP, setPlayerHP] = useState(player.hp * (1 + (player.upgrades.lvlHP / 10)));
     const [enemyChoise, setEnemyChoise] = useState('default');
     const [playerChoise, setPlayerChoise] = useState('default');
     const [showBubble, setShowBubble] = useState(false);
@@ -20,10 +20,17 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
     useEffect(() => {
         checkEnd();
     }, [enemyHP, playerHP]);
+    useEffect(()=> {
+        if (isFight === true) {
+            setShowNavBar(false)
+        } else {
+            setShowNavBar(true)
+        }
+    }, [isFight])
 
     function startFight() {
         setEnemyHP(enemy.hp);
-        setPlayerHP(player.hp);
+        setPlayerHP(player.hp * (1 + (player.upgrades.lvlHP / 10)));
         setShowBubble(false);
         setIsFight(true);
         doEnemyChoise();
@@ -35,7 +42,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         setTimeout(()=>{
             setIsEndRound(false);
             doEnemyChoise();
-        }, 500)
+        }, 1500)
         
     }
     function choosingBubbleLine(c) {
@@ -80,32 +87,32 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
         switch (c) {
             case 'r':
                 if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
                 } else if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP-10);
-                    setPlayerHP(playerHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
+                    setPlayerHP(playerHP - 10);
                 } else {
-                    setPlayerHP(playerHP-10);
+                    setPlayerHP(playerHP - 10);
                 }
                 break;
             case 's':
                 if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
                 } else if (enemyChoise == 's') {
-                    setEnemyHP(enemyHP-10);
-                    setPlayerHP(playerHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
+                    setPlayerHP(playerHP - 10);
                 } else {
-                    setPlayerHP(playerHP-10);
+                    setPlayerHP(playerHP - 10);
                 }
                 break;
             case 'p':
                 if (enemyChoise == 'r') {
-                    setEnemyHP(enemyHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
                 } else if (enemyChoise == 'p') {
-                    setEnemyHP(enemyHP-10);
-                    setPlayerHP(playerHP-10);
+                    setEnemyHP(enemyHP - 10 * (1 + (player.upgrades.lvlDMG / 10)));
+                    setPlayerHP(playerHP - 10);
                 } else {
-                    setPlayerHP(playerHP-10);
+                    setPlayerHP(playerHP - 10);
                 }
                 break;
             default:
@@ -139,7 +146,7 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
                     </>
                     : <Card type={playerChoise}/>}
                 </div>
-                <ProgressBar color="green" maxVal={player.hp} curVal={playerHP}>hp</ProgressBar>
+                <ProgressBar color="green" maxVal={player.hp * (1 + (player.upgrades.lvlHP / 10))} curVal={playerHP}>hp</ProgressBar>
             </div>
             <div className="result">
                 <Text>Побед: {results.w}</Text>
@@ -147,6 +154,13 @@ export const FightWindow = ({ onClick = null, className = '', enemy, player, set
                 <Text>Ничья: {results.s}</Text>
             </div>
             <Button className="startBtn" onClick={startFight}>Начать битву!</Button>
+            {isFight &&
+            <Button className="startBtn" onClick={()=> {
+                setResults({...results, d: results.d + 1});
+                setIsFight(false);
+                setShowBubble(true);
+                choosingBubbleLine('defeat');
+            }}>Сдаться.</Button>}
         </div>
     );
 };

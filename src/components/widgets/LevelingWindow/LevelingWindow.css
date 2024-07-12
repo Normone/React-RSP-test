@@ -1,0 +1,35 @@
+.fightWindow {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: auto 250px 250px;
+    width: 80%;
+    min-width: auto;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.FWStatus {
+    grid-column: 2 / 2;
+    grid-row: 1 / 2;
+}
+.enemy {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+}
+.player {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+}
+.playerCards {
+    display: flex;
+}
+.result {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+.startBtn {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    width: 90%;
+    height: auto;
+}
